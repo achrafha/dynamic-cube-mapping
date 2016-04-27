@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glu.h>
 #include <SDL.h>
 
@@ -21,9 +21,11 @@ struct {
   GLuint colorBufferId;
 } state;
 
+GLuint indextest;
+
 const GLchar* VertexShader =
 {
-  "#version 400\n"\
+  "#version 330 core\n"\
 
     "layout(location=0) in vec4 in_Position;\n"\
     "layout(location=1) in vec4 in_Color;\n"\
@@ -38,7 +40,7 @@ const GLchar* VertexShader =
 
 const GLchar* FragmentShader =
 {
-  "#version 400\n"\
+  "#version 330 core\n"\
 
     "in vec4 ex_Color;\n"\
     "out vec4 out_Color;\n"\
@@ -98,6 +100,7 @@ void initResources() {
   glUseProgram(state.programId);
 
   openGLError = glGetError();
+
   if (openGLError != GL_NO_ERROR)
   {
     fprintf(
@@ -121,34 +124,37 @@ void initResources() {
     0.0f, 0.0f, 1.0f, 1.0f
   };
 
-  openGLError = glGetError();
-  
-  glGenVertexArrays(1, &(state.vaoId));
-  glBindVertexArray(state.vaoId);
-
-  glGenBuffers(1, &(state.vboId));
-  glBindBuffer(GL_ARRAY_BUFFER, state.vboId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(0);
-  
-  glGenBuffers(1, &(state.colorBufferId));
-  glBindBuffer(GL_ARRAY_BUFFER, state.colorBufferId);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
-  glEnableVertexAttribArray(1);
 
   openGLError = glGetError();
-  if (openGLError != GL_NO_ERROR)
-  {
-    fprintf(
-      stderr,
-      "ERROR: Could not create a VBO: %s \n",
-      gluErrorString(openGLError)
-    );
+  fprintf(stderr, "%p\n", (void*)&(indextest));
+  
+  glGenVertexArrays(1, &indextest);
+  fprintf(stderr, "Ca marche !!!!!\n");
+  /* glBindVertexArray(state.vaoId); */
 
-    exit(EXIT_FAILURE);
-  }
+  /* glGenBuffers(1, &(state.vboId)); */
+  /* glBindBuffer(GL_ARRAY_BUFFER, state.vboId); */
+  /* glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW); */
+  /* glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0); */
+  /* glEnableVertexAttribArray(0); */
+  
+  /* glGenBuffers(1, &(state.colorBufferId)); */
+  /* glBindBuffer(GL_ARRAY_BUFFER, state.colorBufferId); */
+  /* glBufferData(GL_ARRAY_BUFFER, sizeof(Colors), Colors, GL_STATIC_DRAW); */
+  /* glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0); */
+  /* glEnableVertexAttribArray(1); */
+
+  /* openGLError = glGetError(); */
+  /* if (openGLError != GL_NO_ERROR) */
+  /* { */
+  /*   fprintf( */
+  /*     stderr, */
+  /*     "ERROR: Could not create a VBO: %s \n", */
+  /*     gluErrorString(openGLError) */
+  /*   ); */
+
+  /*   exit(EXIT_FAILURE); */
+  /* } */
 
   /* SDL_Surface *surface = SDL_LoadBMP("lenna.bmp"); */
   /* glGenTextures(1, &(state.texture)); */
@@ -261,6 +267,9 @@ void cleanup(void) {
  * Initialisation de la SDL, création du contexte OpenGL et ouverture de la fenetre.
  */
 void initWindow(void) {
+
+  GLenum GlewInitResult;
+
   if (SDL_VideoInit(NULL) < 0) {
     fprintf(stderr, "Erreur à l'initialisation de la vidéo : %s\n",
         SDL_GetError());
@@ -288,6 +297,17 @@ void initWindow(void) {
     fprintf(stderr, "Erreur lors de la création du contexte OpenGL\n");
     SDL_DestroyWindow(state.graphics.window);
     SDL_Quit();
+    exit(EXIT_FAILURE);
+  }
+
+  GlewInitResult = glewInit();
+
+  if (GLEW_OK != GlewInitResult) {
+    fprintf(
+      stderr,
+      "ERROR: %s\n",
+      glewGetErrorString(GlewInitResult)
+    );
     exit(EXIT_FAILURE);
   }
 

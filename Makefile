@@ -1,5 +1,5 @@
-CCFLAGS = -std=c11 -pedantic -Wall -Wextra -Werror `sdl2-config --cflags`
-LDLIBS = -lGLU -lGL `sdl2-config --libs`
+CCFLAGS = -std=c11 -pedantic -Wall -Wextra `sdl2-config --cflags`
+LDLIBS = -lGLU -lGL -lGLEW `sdl2-config --libs`
 SRC = $(wildcard *.c)
 OBJ = $(SOURCES:.c=.o)
 BIN = cubemap
